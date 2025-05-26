@@ -1,11 +1,11 @@
-// src/config/constants.js
+import { NavigationItem, SkillsData, Project, SocialLink, ContactInfo, Language } from '@/types';
 
 /**
  * Application-wide constants
  */
 
 // Navigation items for header and mobile menu
-export const NAVIGATION_ITEMS = [
+export const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: 'home', translationKey: 'nav.home' },
   { id: 'about', translationKey: 'nav.about' },
   { id: 'experience', translationKey: 'nav.experience' },
@@ -15,7 +15,7 @@ export const NAVIGATION_ITEMS = [
 ];
 
 // Skills data for the skills section
-export const SKILLS_DATA = {
+export const SKILLS_DATA: SkillsData = {
   frontend: [
     { name: 'Angular', level: 95 },
     { name: 'TypeScript', level: 92 },
@@ -48,7 +48,7 @@ export const SKILLS_DATA = {
 };
 
 // Projects data for the projects section
-export const PROJECTS_DATA = [
+export const PROJECTS_DATA: Project[] = [
   {
     id: 'intranet',
     translationKey: 'projects.intranet',
@@ -67,7 +67,7 @@ export const PROJECTS_DATA = [
 ];
 
 // Social media links
-export const SOCIAL_LINKS = [
+export const SOCIAL_LINKS: SocialLink[] = [
   {
     name: 'LinkedIn',
     url: 'https://www.linkedin.com/in/elder-fonseca-lima',
@@ -81,14 +81,14 @@ export const SOCIAL_LINKS = [
 ];
 
 // Contact information
-export const CONTACT_INFO = {
+export const CONTACT_INFO: ContactInfo = {
   email: 'elder.fonseca15@gmail.com',
   phone: '+55 (61) 98429-9449',
   location: 'Brasília - DF, Brazil',
 };
 
 // Available languages for the language switcher
-export const AVAILABLE_LANGUAGES = [
+export const AVAILABLE_LANGUAGES: Language[] = [
   { code: 'en', name: 'English' },
   { code: 'pt', name: 'Português' },
 ];

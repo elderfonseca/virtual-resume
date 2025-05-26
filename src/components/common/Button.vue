@@ -1,4 +1,3 @@
-<!-- src/components/common/Button.vue -->
 <template>
   <component
     :is="isLink ? 'a' : 'button'"
@@ -31,15 +30,16 @@
   </component>
 </template>
 
-<script>
-import { computed } from 'vue';
+<script lang="ts">
+import { computed, defineComponent } from 'vue';
 import { useLocale } from '@/composables/useLocale';
+import { ButtonVariant, ButtonSize, IconPosition } from '@/types';
 
 /**
  * Reusable button component that can be used as a button or link
  * Supports different variants, sizes, and states
  */
-export default {
+export default defineComponent({
   name: 'AppButton',
 
   props: {
@@ -48,9 +48,9 @@ export default {
      * Available options: primary, secondary, outline, text
      */
     variant: {
-      type: String,
+      type: String as () => ButtonVariant,
       default: 'primary',
-      validator: (value) => ['primary', 'secondary', 'outline', 'text'].includes(value),
+      validator: (value: string): boolean => ['primary', 'secondary', 'outline', 'text'].includes(value),
     },
 
     /**
@@ -58,9 +58,9 @@ export default {
      * Available options: sm, md, lg
      */
     size: {
-      type: String,
+      type: String as () => ButtonSize,
       default: 'md',
-      validator: (value) => ['sm', 'md', 'lg'].includes(value),
+      validator: (value: string): boolean => ['sm', 'md', 'lg'].includes(value),
     },
 
     /**
@@ -86,7 +86,7 @@ export default {
     type: {
       type: String,
       default: 'button',
-      validator: (value) => ['button', 'submit', 'reset'].includes(value),
+      validator: (value: string): boolean => ['button', 'submit', 'reset'].includes(value),
     },
 
     /**
@@ -121,9 +121,9 @@ export default {
      * Position of the icon relative to the text
      */
     iconPosition: {
-      type: String,
+      type: String as () => IconPosition,
       default: 'left',
-      validator: (value) => ['left', 'right'].includes(value),
+      validator: (value: string): boolean => ['left', 'right'].includes(value),
     },
   },
 
@@ -136,13 +136,13 @@ export default {
     /**
      * Determine if the button should be rendered as a link
      */
-    const isLink = computed(() => Boolean(props.href));
+    const isLink = computed((): boolean => Boolean(props.href));
 
     /**
      * Classes for button size
      */
-    const sizeClasses = computed(() => {
-      const sizes = {
+    const sizeClasses = computed((): string => {
+      const sizes: Record<ButtonSize, string> = {
         sm: 'px-3 py-2 text-sm',
         md: 'px-4 py-2 text-base',
         lg: 'px-6 py-3 text-lg',
@@ -154,8 +154,8 @@ export default {
     /**
      * Classes for button variant
      */
-    const variantClasses = computed(() => {
-      const variants = {
+    const variantClasses = computed((): string => {
+      const variants: Record<ButtonVariant, string> = {
         primary:
           'bg-[var(--color-primary)] text-[var(--color-text-primary)] hover:bg-[var(--color-primary)]/90 active:bg-[var(--color-primary)]/80',
         secondary:
@@ -180,5 +180,5 @@ export default {
       externalLinkLabel,
     };
   },
-};
+});
 </script>

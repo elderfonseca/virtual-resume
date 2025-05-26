@@ -1,5 +1,6 @@
-// src/composables/useGlobe.js
-import { ref, onUnmounted } from 'vue';
+// src/composables/useGlobe.ts
+import { ref, onUnmounted, Ref } from 'vue';
+import { GlobeOptions } from '@/types';
 import * as THREE from 'three';
 
 /**
@@ -8,15 +9,15 @@ import * as THREE from 'three';
  */
 export function useGlobe() {
   // References
-  const globeContainer = ref(null);
+  const globeContainer: Ref<HTMLElement | null> = ref(null);
 
   // Three.js objects
-  let scene = null;
-  let camera = null;
-  let renderer = null;
-  let globe = null;
-  let graticule = null;
-  let animationFrameId = null;
+  let scene: THREE.Scene | null = null;
+  let camera: THREE.PerspectiveCamera | null = null;
+  let renderer: THREE.WebGLRenderer | null = null;
+  let globe: THREE.Mesh | null = null;
+  let graticule: THREE.Object3D | null = null;
+  let animationFrameId: number | null = null;
   let isRotating = false;
 
   // Rotation variables
@@ -28,9 +29,9 @@ export function useGlobe() {
   /**
    * Initialize Three.js scene with the globe
    * @param {HTMLElement} container - DOM element to render the globe in
-   * @param {Object} options - Configuration options
+   * @param {GlobeOptions} options - Configuration options
    */
-  const initGlobe = (container, options = {}) => {
+  const initGlobe = (container: HTMLElement, options: GlobeOptions = {}): void => {
     if (!container) return;
 
     // Default options
@@ -84,17 +85,19 @@ export function useGlobe() {
 
   /**
    * Create the globe with graticule (latitude/longitude lines)
-   * @param {Object} config - Configuration options
+   * @param {GlobeOptions} config - Configuration options
    */
-  const createGlobe = (config) => {
+  const createGlobe = (config: GlobeOptions): void => {
+    if (!scene) return;
+
     // Main sphere geometry
     const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
 
     // Create custom shader material for the globe
     const globeMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        color1: { value: new THREE.Color(config.mainColor) },
-        color2: { value: new THREE.Color(config.secondaryColor) },
+        color1: { value: new THREE.Color(config.mainColor || '#00ADB5') },
+        color2: { value: new THREE.Color(config.secondaryColor || '#222831') },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -137,15 +140,17 @@ export function useGlobe() {
 
   /**
    * Create the graticule (latitude/longitude grid)
-   * @param {Object} config - Configuration options
+   * @param {GlobeOptions} config - Configuration options
    */
-  const createGraticule = (config) => {
+  const createGraticule = (config: GlobeOptions): void => {
+    if (!globe) return;
+
     graticule = new THREE.Object3D();
 
     const material = new THREE.LineBasicMaterial({
-      color: new THREE.Color(config.lineColor),
+      color: new THREE.Color(config.lineColor || '#00FFF5'),
       transparent: true,
-      opacity: config.lineOpacity,
+      opacity: config.lineOpacity || 0.2,
     });
 
     // Create latitude lines (parallels)
@@ -156,7 +161,7 @@ export function useGlobe() {
 
       // Create circle points manually
       const segments = 32;
-      const points = [];
+      const points: THREE.Vector3[] = [];
 
       for (let j = 0; j <= segments; j++) {
         const theta = (j / segments) * Math.PI * 2;
@@ -183,7 +188,7 @@ export function useGlobe() {
 
     // Create longitude lines (meridians)
     for (let i = 0; i < 12; i++) {
-      const points = [];
+      const points: THREE.Vector3[] = [];
 
       for (let j = 0; j <= 32; j++) {
         const phi = (Math.PI * j) / 32;
@@ -205,7 +210,7 @@ export function useGlobe() {
   /**
    * Animation loop for continuous rendering
    */
-  const animate = () => {
+  const animate = (): void => {
     animationFrameId = requestAnimationFrame(animate);
 
     if (isRotating) {
@@ -231,14 +236,14 @@ export function useGlobe() {
   /**
    * Start globe rotation
    */
-  const startRotation = () => {
+  const startRotation = (): void => {
     isRotating = true;
   };
 
   /**
    * Stop globe rotation and reset gradually
    */
-  const stopRotation = () => {
+  const stopRotation = (): void => {
     isRotating = false;
 
     // Gradually reset Y rotation only
@@ -249,9 +254,9 @@ export function useGlobe() {
   /**
    * Clean up Three.js resources
    */
-  const cleanupGlobe = () => {
+  const cleanupGlobe = (): void => {
     // Cancel animation frame
-    if (animationFrameId) {
+    if (animationFrameId !== null) {
       cancelAnimationFrame(animationFrameId);
     }
 
@@ -275,12 +280,12 @@ export function useGlobe() {
     // Clean up graticule
     if (graticule) {
       graticule.traverse((child) => {
-        if (child.geometry) child.geometry.dispose();
-        if (child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach((material) => material.dispose());
+        if ((child as THREE.Mesh).geometry) (child as THREE.Mesh).geometry.dispose();
+        if ((child as THREE.Mesh).material) {
+          if (Array.isArray((child as THREE.Mesh).material)) {
+            ((child as THREE.Mesh).material as THREE.Material[]).forEach((material) => material.dispose());
           } else {
-            child.material.dispose();
+            ((child as THREE.Mesh).material as THREE.Material).dispose();
           }
         }
       });

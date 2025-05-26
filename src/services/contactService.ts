@@ -1,4 +1,5 @@
 // src/services/contactService.js
+import { ContactFormData, ValidationResult } from '@/types';
 
 /**
  * Service for handling contact form submissions
@@ -8,11 +9,11 @@
 /**
  * Validates contact form data
  *
- * @param {Object} formData - The form data to validate
- * @returns {Object} Object containing isValid flag and any errors
+ * @param {ContactFormData} formData - The form data to validate
+ * @returns {ValidationResult} Object containing isValid flag and any errors
  */
-export const validateContactForm = (formData) => {
-  const errors = {};
+export const validateContactForm = (formData: ContactFormData): ValidationResult => {
+  const errors: ValidationResult['errors'] = {};
   let isValid = true;
 
   // Validate name
@@ -53,10 +54,10 @@ export const validateContactForm = (formData) => {
  * Submits contact form data
  * Currently simulates an API call with a delay
  *
- * @param {Object} formData - The form data to submit
- * @returns {Promise} Promise that resolves when submission is complete
+ * @param {ContactFormData} formData - The form data to submit
+ * @returns {Promise<{success: boolean, message: string}>} Promise that resolves when submission is complete
  */
-export const submitContactForm = async (formData) => {
+export const submitContactForm = async (formData: ContactFormData): Promise<{ success: boolean; message: string }> => {
   // Validate the form data first
   const validation = validateContactForm(formData);
   if (!validation.isValid) {
@@ -85,7 +86,7 @@ export const submitContactForm = async (formData) => {
 /**
  * In the future, when connecting to a real backend:
  *
- * export const submitContactForm = async (formData) => {
+ * export const submitContactForm = async (formData: ContactFormData): Promise<{success: boolean, message: string}> => {
  *   const validation = validateContactForm(formData);
  *   if (!validation.isValid) {
  *     return Promise.reject(validation.errors);
